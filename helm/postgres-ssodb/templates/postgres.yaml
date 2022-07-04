@@ -211,6 +211,9 @@ spec:
         resources:
           requests:
             storage: 1Gi
+      config:
+        settings:
+          SCRIPT_NAME: "/pgadmin"
   
 ---
 apiVersion: {{ .Values.ssodb_k8sDeploymentApiVersion }}
@@ -219,19 +222,25 @@ metadata:
   name: haproxy-ingress-{{ default .Release.Name .Values.name }}-pgadmin
   annotations:
     kubernetes.io/ingress.class: "haproxy"
-    ingress.kubernetes.io/proxy-protocol: "no"
     ingress.kubernetes.io/secure-backends: "false"
     ingress.kubernetes.io/secure-verify-ca-secret: "false"
     ingress.kubernetes.io/secure-verify-hostname: "false"
+    haproxy-ingress.github.io/forwardfor: add
+    haproxy-ingress.github.io/rewrite-target: /pgadmin
     haproxy-ingress.github.io/headers: |
+      X-Script-Name: /pgadmin
       Host: {{ default .Release.Name .Values.name }}-pgadmin{{ .Values.ssodb_publicServiceDomainEnvPostfix }}.{{ .Values.ssodb_public2ndDomain }}
       X-Scheme: https
 spec:
+  tls:
+  - secretName: {{ default .Release.Name .Values.name }}-pgadmin-tls
+    hosts:
+    - {{ default .Release.Name .Values.name }}-pgadmin{{ .Values.ssodb_publicServiceDomainEnvPostfix }}.{{ .Values.ssodb_public2ndDomain }}
   rules:
   - host: {{ default .Release.Name .Values.name }}-pgadmin{{ .Values.ssodb_publicServiceDomainEnvPostfix }}.{{ .Values.ssodb_public2ndDomain }}
-  - http:
+    http:
       paths:
-      - path: /
+      - path: /pgadmin
         pathType: Prefix
         backend:
           service:
