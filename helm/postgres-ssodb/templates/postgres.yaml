@@ -205,12 +205,27 @@ spec:
   userInterface:
     pgAdmin:
       image:  {{ default "" .Values.ssodb_imagePgAdmin4 | quote }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values: 
+                - {{ SSODB_ZONE_1 }}
       dataVolumeClaimSpec:
         accessModes:
         - "ReadWriteOnce"
         resources:
           requests:
             storage: 1Gi
+        selector:
+          matchLabels: 
+            volume-type: {{ SSO_DB_VOLUME_TYPE }}-pgadmin
+        storageClassName: {{ PGO_CLUSTER_NAME }}-gce-pd-cmek
+        volumeName: pv-{{ PGO_CLUSTER_NAME }}-pgadmin
+        volumeMode: Filesystem
       config:
         settings:
           SCRIPT_NAME: "/pgadmin"
