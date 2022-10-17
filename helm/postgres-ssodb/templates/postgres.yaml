@@ -213,7 +213,7 @@ spec:
               - key: topology.kubernetes.io/zone
                 operator: In
                 values: 
-                - {{ SSODB_ZONE_1 }}
+                - {{ .Values.ssodb_zone_1 }}
       dataVolumeClaimSpec:
         accessModes:
         - "ReadWriteOnce"
@@ -222,9 +222,9 @@ spec:
             storage: 1Gi
         selector:
           matchLabels: 
-            volume-type: {{ SSO_DB_VOLUME_TYPE }}-pgadmin
-        storageClassName: {{ PGO_CLUSTER_NAME }}-gce-pd-cmek
-        volumeName: pv-{{ PGO_CLUSTER_NAME }}-pgadmin
+            volume-type: {{ .Values.sso_db_volume_type }}-pgadmin
+        storageClassName: {{ .Values.pgo_cluster_name }}-gce-pd-cmek
+        volumeName: pv-{{ .Values.pgo_cluster_name }}-pgadmin
         volumeMode: Filesystem
       config:
         settings:
