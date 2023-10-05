@@ -134,3 +134,13 @@ rules:
   - list
   - patch
   - watch
+  
+- apiGroups:
+  - postgres-operator.crunchydata.com
+  resources:
+  - pgupgrades
+  verbs:
+  - get
+  - list
+  - watch
+  
